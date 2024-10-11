@@ -1,0 +1,23 @@
+---
+const navItems = [
+  { href: '/products', label: 'Product List' },
+  { href: '/products/create', label: 'Create Product' },
+];
+---
+
+<aside class="bg-gray-800 text-white w-64 min-h-screen p-4">
+  <nav>
+    <ul>
+      {navItems.map((item) => (
+        <li class="mb-2">
+          <a
+            href={item.href}
+            class="block py-2 px-4 rounded hover:bg-gray-700 transition-colors duration-200"
+          >
+            {item.label}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
