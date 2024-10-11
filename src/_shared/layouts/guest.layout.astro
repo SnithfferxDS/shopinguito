@@ -1,0 +1,12 @@
+---
+  import Mainlayout from './main.layout.astro';
+
+  interface Props {
+    title?: string;
+  }
+
+  const { title } = Astro.props;
+  ---
+  <Mainlayout title={tiele}>
+    <slot/>
+  </Mainlayout>

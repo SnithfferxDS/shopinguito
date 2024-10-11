@@ -1,0 +1,19 @@
+---
+import Mainlayout from './main.layout.astro';
+import Sidebar from '../templates/sidebar.astro';
+
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+---
+
+<Mainlayout title={title}>
+  <div class="flex">
+    <Sidebar />
+    <main class="flex-1 p-4">
+      <slot />
+    </main>
+  </div>
+</Mainlayout>
