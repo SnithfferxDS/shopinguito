@@ -1,0 +1,28 @@
+---
+import Layout from '../../_shared/layouts/app.layout.astro';
+import { getData } from '../../services/api.js';
+
+const products = await getData('products');
+
+const title = "Product List";
+---
+
+<Layout title={title}>
+  <h1 class="text-3xl font-bold mb-6">{title}</h1>
+  {products && products.length > 0 ? (
+    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      {products.map((product) => (
+        <li class="bg-white shadow rounded-lg p-4">
+          <h2 class="text-xl font-semibold mb-2">{product.name}</h2>
+          <p class="text-gray-600 mb-2">{product.description}</p>
+          <p class="text-lg font-bold">${product.price.toFixed(2)}</p>
+          <a href={`/products/${product.id}`} class="text-blue-500 hover:underline mt-2 inline-block">
+            View Details
+          </a>
+        </li>
+      ))}
+    </ul>
+  ) : (
+    <p>No products found.</p>
+  )}
+</Layout>
