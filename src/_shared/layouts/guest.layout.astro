@@ -1,12 +1,18 @@
 ---
   import Mainlayout from './main.layout.astro';
+  import Navbar from '../templates/navbar.astro';
+  import Footer from '../templates/footer.astro';
 
   interface Props {
     title?: string;
   }
 
   const { title } = Astro.props;
-  ---
-  <Mainlayout title={tiele}>
+---
+<Mainlayout title={title}>
+  <Navbar />
+  <div class="container mx-auto mt-8 px-4">
     <slot/>
-  </Mainlayout>
+  </div>
+  <Footer />
+</Mainlayout>
