@@ -1,13 +1,13 @@
 ---
-import Layout from '../../_shared/layouts/app.layout.astro';
-import ProductForm from '../../_shared/components/ProductForm.astro';
+import Layout from "@Layouts/app.astro";
+import ProductForm from "@Components/ProductForm.astro";
 
 const title = "Create Product";
 ---
 
 <Layout title={title}>
-  <main class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6">{title}</h1>
-    <ProductForm />
-  </main>
+	<main class="container mx-auto p-4">
+		<h1 class="text-3xl font-bold mb-6">{title}</h1>
+		<ProductForm />
+	</main>
 </Layout>

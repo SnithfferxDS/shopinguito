@@ -1,7 +1,12 @@
 ---
-import Layout from '../../../_shared/layouts/app.layout.astro';
-import ProductForm from '../../../_shared/components/ProductForm.astro';
-import { getData } from '../../../services/api.js';
+import Layout from "@Layouts/app.astro";
+import ProductForm from "@Components/ProductForm.astro";
+import { getData } from "@Services/api.js";
+
+interface Props {
+	id: string;
+	title?: string;
+}
 
 const { id } = Astro.params;
 const product = await getData(`products/${id}`);
@@ -10,12 +15,14 @@ const title = product ? `Edit ${product.name}` : "Product Not Found";
 ---
 
 <Layout title={title}>
-  <main class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6">{title}</h1>
-    {product ? (
-      <ProductForm product={product} isEditing={true} />
-    ) : (
-      <p class="text-red-500">Product not found.</p>
-    )}
-  </main>
+	<main class="container mx-auto p-4">
+		<h1 class="text-3xl font-bold mb-6">{title}</h1>
+		{
+			product ? (
+				<ProductForm product={product} isEditing={true} />
+			) : (
+				<p class="text-red-500">Product not found.</p>
+			)
+		}
+	</main>
 </Layout>

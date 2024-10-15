@@ -1,6 +1,6 @@
 ---
-import Layout from '../../_shared/layouts/app.layout.astro';
-import { getData } from '../../services/api.js';
+import Layout from '@Layouts/app.astro';
+import { getData } from '@Services/api.js';
 
 const products = await getData('products');
 
