@@ -1,12 +1,12 @@
 {
-  "extends": "astro/tsconfigs/base",
+  "extends": "astro/tsconfigs/strict",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
       "@/*": ["src/*"],
-      "@Layouts/*": ["src/_shared/layouts/*"],
-      "@Components/*": ["src/_shared/components/*"],
-      "@Templates/*": ["src/_shared/templates/*"],
+      "@Layouts/*": ["src/shared/layouts/*"],
+      "@Components/*": ["src/shared/components/*"],
+      "@Templates/*": ["src/shared/templates/*"],
       "@Configs/*": ["src/configs/*"],
       "@Services/*": ["src/services/*"],
       "@Utils/*": ["src/utils/*"]
