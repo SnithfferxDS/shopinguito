@@ -1,21 +1,21 @@
 ---
-import Mainlayout from "./main.layout.astro";
-import Sidebar from "../templates/sidebar.astro";
-import Navbar from "../templates/app.navbar.astro";
-import Footer from "../templates/footer.astro";
+import Mainlayout from "@Layouts/main.astro";
+import Sidebar from "@Templates/sidebar.astro";
+import Navbar from "@Templates/app.navbar.astro";
+import Footer from "@Templates/app.footer.astro";
 
 interface Props {
-	title?: string;
+	title: string;
 }
 
 const { title } = Astro.props;
 ---
 
 <Mainlayout title={title}>
-  <Navbar />
-	<div class="flex">
-		<Sidebar />
-		<main class="container mx-auto p-4">
+  	<Navbar />
+  	<Sidebar />
+	<div class="flex pt-16 overflow-hidden bg-gray-50 dark:bg-gray-900">
+		<main id="mainContent" class="relative w-full h-full overflow-y-auto lg:ml-64 min-h-screen bg-gray-100 dark:bg-gray-800">
 			<slot />
 			<Footer />
 		</main>

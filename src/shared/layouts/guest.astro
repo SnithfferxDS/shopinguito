@@ -1,7 +1,7 @@
 ---
 import Mainlayout from "@Layouts/main.astro";
-import Navbar from "@Templates/navbar.astro";
-import Footer from "@Templates/footer.astro";
+import Navbar from "@Templates/guest.navbar.astro";
+import Footer from "@Templates/guest.footer.astro";
 
 interface Props {
 	title?: string;
@@ -12,7 +12,7 @@ const { title } = Astro.props;
 
 <Mainlayout title={title}>
 	<Navbar />
-	<div class="container mx-auto mt-8 px-4">
+	<div class="mx-auto mt-6 px-2">
 		<slot />
 	</div>
 	<Footer />
