@@ -1,5 +1,6 @@
 import { API_URL } from '@Configs/constants.js';
 import { getParams } from '@Utils/functions.js';
+import axios from "axios";
 
 export async function getData(resource, data) {
   let endpoint = `${API_URL}/${resource}.php`;
