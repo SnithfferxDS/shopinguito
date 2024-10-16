@@ -1,0 +1,16 @@
+---
+import Layout from "@Layouts/app.astro";
+import { getData } from "@Services/api.js";
+
+interface Props {
+    id: string;
+    title?: string;
+}
+
+const { id } = Astro.params;
+const user = await getData('user',{"id":id});
+const title = user ? user.name : 'No user';
+---
+<Layout title={title}>
+
+</Layout>
