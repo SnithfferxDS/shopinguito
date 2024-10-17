@@ -1,6 +1,9 @@
-import { API_URL } from '@Configs/constants.js';
+import { API_TOKEN, API_URL } from '@Configs/constants.js';
 import { getParams } from '@Utils/functions.js';
 import axios from "axios";
+
+axios.defaults.baseURL = API_URL;
+axios.defaults.headers.common['Authorization'] = API_TOKEN;
 
 export async function getData(resource, data) {
   let endpoint = `${API_URL}/${resource}.php`;
@@ -8,10 +11,13 @@ export async function getData(resource, data) {
     endpoint += `?${getParams}`;
   }
   try {
-    const Response = await axios.get(endpoint).then((res) => res.json());
+    const Response = await axios.get(endpoint);
     if (Response !== undefined) {
-      return Response.data;
-    }
+          console.log(Response);
+          return Response.data;
+        } else {
+          return [];
+        }
   } catch (er) {
     if (er instanceof Error) {
       console.log(er);
@@ -30,10 +36,14 @@ export async function sendData(resource, data) {
           'Content-Type': 'application/json',
         },
       })
-      .then((res) => res.json());
-    if (Response !== undefined) {
-      return Response.data;
-    }
+      .then((res) => {
+        if (res !== undefined) {
+          return res.data;
+        } else {
+          return [];
+        }
+      });
+    return Response;
   } catch (er) {
     if (er instanceof Error) {
       console.log(er);
@@ -52,10 +62,14 @@ export async function updateData(resource, data) {
           'Content-Type': 'application/json',
         },
       })
-      .then((res) => res.json());
-    if (Response !== undefined) {
-      return Response.data;
-    }
+      .then((res) => {
+        if (res !== undefined) {
+          return res.data;
+        } else {
+          return [];
+        }
+      });
+    return Response;
   } catch (er) {
     if (er instanceof Error) {
       console.log(er);
@@ -74,10 +88,14 @@ export async function deleteData(resource, data) {
           'Content-Type': 'application/json',
         },
       })
-      .then((res) => res.json());
-    if (Response !== undefined) {
-      return Response.data;
-    }
+      .then((res) => {
+        if (res !== undefined) {
+          return res.data;
+        } else {
+          return [];
+        }
+      });
+    return Response;
   } catch (er) {
     if (er instanceof Error) {
       console.log(er);

@@ -1,4 +1,5 @@
 import Swal from 'sweetalert2';
+import { APP_URL } from '@Configs/constants.js';
 
 /**
  * @typedef {Object} Message
@@ -27,4 +28,12 @@ export function getParams(data) {
     query = Object.entries(data).map(([key, value]) => `${key}=${value}`);
   }
   return query.join("&");
+}
+
+export function url(path = '') {
+  return `${APP_URL}/${path}`;
+}
+
+export function assets(path = '') {
+  return `${APP_URL}/assets/${path}`;
 }
