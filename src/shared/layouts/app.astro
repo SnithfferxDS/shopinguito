@@ -12,11 +12,38 @@ const { title } = Astro.props;
 ---
 
 <Mainlayout title={title}>
-  	<Navbar />
-  	<Sidebar />
-	<div class="flex pt-16 overflow-hidden bg-gray-50 dark:bg-gray-900">
-		<main id="mainContent" class="relative w-full h-full overflow-y-auto lg:ml-64 min-h-screen bg-gray-100 dark:bg-gray-800">
-			<slot />
+	<Sidebar />
+	<Navbar />
+	<div class="flex
+		pt-16
+		overflow-hidden
+		bg-gray-100
+		dark:bg-gray-800">
+		<main
+			id="mainContent"
+			class="relative
+			w-full
+			h-full
+			overflow-y-auto
+			md:ml-64
+			lg:ml-64
+			min-h-screen
+			bg-gray-200
+			dark:bg-gray-700"
+		>
+			<div
+				class="rounded-lg
+				shadow
+				p-2
+				my-4
+				mx-2
+				md:p-4
+				xl:p-6
+				bg-slate-100
+				dark:bg-gray-600"
+			>
+				<slot />
+			</div>
 			<Footer />
 		</main>
 	</div>
