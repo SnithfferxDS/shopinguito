@@ -1,28 +1,875 @@
 ---
-import Layout from '@Layouts/app.astro';
-import { getData } from '@Services/api.js';
+import Layout from "@Layouts/app.astro";
+import { getData } from "@Services/api.js";
+import { assets } from "@/utils/functions";
 
-const products = await getData('products');
+const brands = await getData("brands");
+const commonNames = await getData("commonnames");
+const categories = await getData("classes");
+
+//const products = await getData('products');
 
 const title = "Product List";
 ---
 
 <Layout title={title}>
-  <h1 class="text-3xl font-bold mb-6">{title}</h1>
-  {products && products.length > 0 ? (
-    <ul class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {products.map((product) => (
-        <li class="bg-white shadow rounded-lg p-4">
-          <h2 class="text-xl font-semibold mb-2">{product.name}</h2>
-          <p class="text-gray-600 mb-2">{product.description}</p>
-          <p class="text-lg font-bold">${product.price.toFixed(2)}</p>
-          <a href={`/products/${product.id}`} class="text-blue-500 hover:underline mt-2 inline-block">
-            View Details
-          </a>
-        </li>
-      ))}
-    </ul>
-  ) : (
-    <p>No products found.</p>
-  )}
+	<!-- Heading -->
+	<section
+		class="p-2
+        flex
+        items-center
+        justify-between
+        border-b
+        lg:mt-1.5
+        bg-white
+        border-gray-200
+        dark:bg-gray-800
+        dark:border-gray-700"
+	>
+		<div class="max-w-screen-xl px-4 mx-auto lg:px-12 w-full mb-2">
+			<div class="mb-4">
+				<!-- breadcrumbs -->
+			</div>
+			<div
+				class="relative shadow-md sm:rounded-lg bg-gray-50 dark:bg-gray-800"
+			>
+				<div
+					class="flex flex-col items-center justify-between p-4 space-y-3 md:flex-row md:space-y-0 md:space-x-4"
+				>
+					<div class="w-full md:w-1/2">
+						<form class="flex items-center">
+							<label for="simple-search" class="sr-only"
+								>Buscar</label
+							>
+							<div class="relative w-full">
+								<div
+									class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+								>
+									<svg
+										aria-hidden="true"
+										class="w-5 h-5 text-gray-500 dark:text-gray-400"
+										fill="currentColor"
+										viewBox="0 0 20 20"
+										xmlns="http://www.w3.org/2000/svg"
+									>
+										<path
+											fill-rule="evenodd"
+											d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+											clip-rule="evenodd"></path>
+									</svg>
+								</div>
+								<input
+									type="text"
+									id="simple-search"
+									class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue_crayon-500 focus:border-blue_crayon-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue_crayon-500 dark:focus:border-blue_crayon-500"
+									placeholder="Search"
+									required=""
+								/>
+							</div>
+						</form>
+					</div>
+
+					<div
+						class="flex items-center ml-auto space-x-2 sm:space-x-3"
+					>
+						<button
+							type="button"
+							data-refresh
+							class="inline-flex
+                                items-center
+                                justify-center
+                                w-1/2
+                                px-3
+                                py-2
+                                text-sm
+                                font-medium
+                                text-center
+                                text-gray-100
+                                rounded-lg
+                                bg-blue_crayon-700
+                                hover:bg-blue_crayon-800
+                                focus:ring-4
+                                focus:ring-blue_crayon-300
+                                sm:w-auto
+                                dark:bg-blue_crayon-600
+                                dark:hover:bg-blue_crayon-700
+                                dark:focus:ring-blue_crayon-800"
+						>
+							<svg
+								class="w-5 h-5 mr-2 -ml-1"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+								viewBox="0 0 24 24"
+								xmlns="http://www.w3.org/2000/svg"
+								aria-hidden="true"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99"
+								></path>
+							</svg>
+							Refrescar
+						</button>
+						<button
+							id="createBrnadButton"
+							class="inline-flex items-center justify-center w-1/2 px-3 py-2 text-sm font-medium text-center text-white rounded-lg bg-blue_crayon-700 hover:bg-blue_crayon-800 focus:ring-4 focus:ring-blue_crayon-300 sm:w-auto dark:bg-blue_crayon-600 dark:hover:bg-blue_crayon-700 dark:focus:ring-blue_crayon-800"
+							type="button"
+							data-modal-target="createResourceModal"
+							data-modal-show="createResourceModal"
+							aria-controls="createResourceModal"
+						>
+							<svg
+								class="w-5 h-5 mr-2 -ml-1"
+								fill="currentColor"
+								viewBox="0 0 20 20"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<path
+									fill-rule="evenodd"
+									d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
+									clip-rule="evenodd"></path>
+							</svg>
+							Nuevo
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Table -->
+	<section class="flex flex-col">
+		<div class="overflow-x-auto">
+			<div
+				class="relative shadow-md sm:rounded-lg bg-gray-50 dark:bg-gray-800"
+			>
+				<div
+					class="p-4 space-y-3 md:space-y-0 md:space-x-4 overflow-hidden"
+				>
+				</div>
+			</div>
+		</div>
+
+		<!-- Edit user modal -->
+		<div
+			id="createResourceModal"
+			tabindex="-1"
+			aria-hidden="true"
+			class="fixed top-0 left-0 right-0 z-50 items-center justify-center hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
+		>
+			<div class="relative w-full max-w-4xl max-h-full">
+				<!-- Modal content -->
+				<form
+					class="relative bg-white rounded-lg shadow dark:bg-gray-700"
+				>
+					<!-- Modal header -->
+					<div
+						class="flex items-start justify-between p-4 border-b rounded-t dark:border-gray-600"
+					>
+						<h3
+							class="text-xl font-semibold text-gray-900 dark:text-white"
+						>
+							Nuevo Producto
+						</h3>
+						<button
+							type="button"
+							class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
+							data-modal-hide="createResourceModal"
+						>
+							<svg
+								class="w-3 h-3"
+								aria-hidden="true"
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 14 14"
+							>
+								<path
+									stroke="currentColor"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
+								></path>
+							</svg>
+							<span class="sr-only">Close modal</span>
+						</button>
+					</div>
+					<!-- Modal body -->
+					<div class="p-6 space-y-6">
+						<div
+							class="mb-4 border-b border-gray-200 dark:border-gray-700"
+						>
+							<ul
+								class="flex flex-wrap -mb-px text-sm font-medium text-center text-gray-500 border-b border-gray-200 dark:border-gray-700 dark:text-gray-400"
+								id="default-tab"
+								data-tabs-toggle="#default-tab-content"
+								role="tablist"
+							>
+								<li class="me-2" role="presentation">
+									<button
+										class="inline-block p-4 border-b-2 rounded-t-lg text-blue-600 bg-gray-100 dark:bg-gray-700 dark:text-blue-400"
+										id="productGeneral-tab"
+										data-tabs-target="#productGeneral"
+										type="button"
+										role="tab"
+										aria-controls="productGeneral"
+										aria-selected="false">General</button
+									>
+								</li>
+								<li class="me-2" role="presentation">
+									<button
+										class="inline-block p-4 border-b-2 rounded-t-lg"
+										id="productVariants-tab"
+										data-tabs-target="#productVariants"
+										type="button"
+										role="tab"
+										aria-controls="productVariants"
+										aria-selected="false">Variantes</button
+									>
+								</li>
+								<li class="me-2" role="presentation">
+									<button
+										class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+										id="dashboard-tab"
+										data-tabs-target="#dashboard"
+										type="button"
+										role="tab"
+										aria-controls="dashboard"
+										aria-selected="false"
+										>Descripción</button
+									>
+								</li>
+								<li class="me-2" role="presentation">
+									<button
+										class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+										id="settings-tab"
+										data-tabs-target="#settings"
+										type="button"
+										role="tab"
+										aria-controls="settings"
+										aria-selected="false">Precios</button
+									>
+								</li>
+								<li role="presentation">
+									<button
+										class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+										id="contacts-tab"
+										data-tabs-target="#contacts"
+										type="button"
+										role="tab"
+										aria-controls="contacts"
+										aria-selected="false">Logistica</button
+									>
+								</li>
+							</ul>
+						</div>
+						<div id="default-tab-content">
+							<input
+								type="hidden"
+								id="productID"
+								name="productID"
+								value="0"
+							/>
+							<div
+								class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-700"
+								id="productGeneral"
+								role="tabpanel"
+								aria-labelledby="productGeneral-tab"
+							>
+								<div class="grid grid-cols-12 gap-4">
+									<div class="col-span-12 sm:col-span-4">
+										<div
+											class="max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
+										>
+											<img
+												class="rounded-t-lg"
+												src={assets("img/no_photo.png")}
+												alt=""
+											/>
+											<div class="p-5">
+												<p
+													class="mb-3 font-normal text-gray-700 dark:text-gray-400"
+												>
+													Sin Imagen
+												</p>
+												<a
+													href="#"
+													class="inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+												>
+													Agregar
+													<svg
+														class="rtl:rotate-180 w-3.5 h-3.5 ms-2"
+														aria-hidden="true"
+														xmlns="http://www.w3.org/2000/svg"
+														fill="none"
+														viewBox="0 0 14 10"
+													>
+														<svg
+															class="w-6 h-6"
+															aria-hidden="true"
+															xmlns="http://www.w3.org/2000/svg"
+															fill="none"
+															viewBox="0 0 20 18"
+														>
+															<path
+																stroke="currentColor"
+																stroke-linecap="round"
+																stroke-linejoin="round"
+																stroke-width="2"
+																d="M10 12.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"
+															></path>
+															<path
+																stroke="currentColor"
+																stroke-linecap="round"
+																stroke-linejoin="round"
+																stroke-width="2"
+																d="M17 3h-2l-.447-.894A2 2 0 0 0 12.764 1H7.236a2 2 0 0 0-1.789 1.106L5 3H3a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V5a2 2 0 0 0-2-2Z"
+															></path>
+														</svg>
+													</svg>
+												</a>
+											</div>
+										</div>
+									</div>
+									<div class="col-span-12 sm:col-span-8">
+										<div class="grid grid-cols-6 gap-4">
+											<div
+												class="col-span-6 sm:col-span-3"
+											>
+												<label
+													for="productUPC"
+													class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+													>UPC</label
+												>
+												<input
+													type="text"
+													name="productUPC"
+													id="productUPC"
+													class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+													placeholder="UPC de Producto"
+													required=""
+												/>
+											</div>
+											<div
+												class="col-span-6 sm:col-span-3"
+											>
+												<label
+													for="productCommonName"
+													class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+													>Nombre Común</label
+												>
+												<select
+													id="productCommonName"
+													name="productCommonName"
+													class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+												>
+													{
+														commonNames &&
+														commonNames.lenth >
+															0 ? (
+															commonNames.map(
+																(
+																	commonName,
+																) => (
+																	<option
+																		value={
+																			commonName.id
+																		}
+																	>
+																		{
+																			commonName.name
+																		}
+																	</option>
+																),
+															)
+														) : (
+															<option
+																value="0"
+																selected=""
+															>
+																-- Seleccionar
+																Nombre Común --
+															</option>
+														)
+													}
+												</select>
+											</div>
+											<div
+												class="col-span-6 sm:col-span-3"
+											>
+												<label
+													for="productType"
+													class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+													>Tipo</label
+												>
+												<select
+													id="productType"
+													name="productType"
+													class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+													>{
+														categories &&
+														categories.lenth > 0 ? (
+															categories.map(
+																(category) => (
+																	<option
+																		value={
+																			category.id
+																		}
+																	>
+																		{
+																			category.name
+																		}
+																	</option>
+																),
+															)
+														) : (
+															<option
+																value="0"
+																selected=""
+															>
+																-- Seleccionar
+																Tipo --
+															</option>
+														)
+													}
+												</select>
+											</div>
+											<div
+												class="col-span-6 sm:col-span-3"
+											>
+												<label
+													for="productBrand"
+													class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+													>Marca</label
+												>
+												<select
+													id="productBrand"
+													name="productBrand"
+													class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+												>
+													{
+														brands &&
+														brands.lenth > 0 ? (
+															brands.map(
+																(brand) => (
+																	<option
+																		value={
+																			brand.id
+																		}
+																	>
+																		{
+																			brand.name
+																		}
+																	</option>
+																),
+															)
+														) : (
+															<option
+																value="0"
+																selected=""
+															>
+																-- Seleccionar
+																Maca --
+															</option>
+														)
+													}
+												</select>
+											</div>
+											<div
+												class="col-span-6 sm:col-span-3"
+											>
+												<label
+													for="productMPN"
+													class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+													>MPN</label
+												>
+												<input
+													type="text"
+													name="productMPN"
+													id="productMPN"
+													class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+													placeholder="Bonnie"
+													required=""
+												/>
+											</div>
+											<div
+												class="col-span-6 sm:col-span-3"
+											>
+												<label
+													for="productSKU"
+													class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+													>SKU</label
+												>
+												<input
+													type="text"
+													name="productSKU"
+													id="productSKU"
+													class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+													placeholder="Bonnie"
+													required=""
+												/>
+											</div>
+											<div
+												class="col-span-12 sm:col-span-6"
+											>
+												<label
+													for="productName"
+													class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+													>Nombre</label
+												>
+												<input
+													type="text"
+													name="productName"
+													id="productName"
+													class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+													placeholder="Bonnie"
+													required=""
+												/>
+											</div>
+											<div
+												class="col-span-2 sm:col-span-6"
+											>
+												<button
+													id="btnAddProduct"
+													class="bg-blue_crayon-400 hover:bg-blue_crayon-500 text-white font-bold py-2 px-4 rounded"
+													type="submit"
+													>Agragar</button
+												>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div
+								class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-700"
+								id="productVariants"
+								role="tabpanel"
+								aria-labelledby="productVariants-tab"
+							>
+								<div class="mb-4">
+									<span
+										class="block mb-2 text-sm font-medium text-gray-800 dark:text-gray-50"
+										>Product Images</span
+									>
+									<div
+										class="grid sm:grid-cols-3 gap-4 mb-4 md:grid-cols-4"
+									>
+										<div
+											class="relative p-2 bg-gray-50 dark:bg-gray-800 rounded-md w-36 h-36 dark:text-gray-50"
+										>
+											<img
+												src="https://flowbite.s3.amazonaws.com/blocks/application-ui/products/imac-side-image.png"
+												alt="iMac Side Image"
+											/>
+											<button
+												type="button"
+												class="absolute bottom-1 left-1 text-red-500 dark:text-red-600 hover:text-red-500 dark:hover:text-red-400"
+											>
+												<svg
+													aria-hidden="true"
+													class="h-5 w-5"
+													fill="currentColor"
+													viewBox="0 0 20 20"
+													xmlns="http://www.w3.org/2000/svg"
+													><path
+														fill-rule="evenodd"
+														d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+														clip-rule="evenodd"
+													></path></svg
+												>
+												<span class="sr-only"
+													>Delete image</span
+												>
+											</button>
+										</div>
+										<div
+											class="relative p-2 bg-gray-50 dark:bg-gray-800 rounded-md w-36 h-36 dark:text-gray-50"
+										>
+											<img
+												src="https://flowbite.s3.amazonaws.com/blocks/application-ui/products/imac-front-image.png"
+												alt="iMac Front Image"
+											/>
+											<button
+												type="button"
+												class="absolute bottom-1 left-1 text-red-500 dark:text-red-600 hover:text-red-500 dark:hover:text-red-400"
+											>
+												<svg
+													aria-hidden="true"
+													class="h-5 w-5"
+													fill="currentColor"
+													viewBox="0 0 20 20"
+													xmlns="http://www.w3.org/2000/svg"
+													><path
+														fill-rule="evenodd"
+														d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+														clip-rule="evenodd"
+													></path></svg
+												>
+												<span class="sr-only"
+													>Delete image</span
+												>
+											</button>
+										</div>
+										<div
+											class="relative p-2 bg-gray-50 rounded-md w-36 h-36 dark:text-gray-50"
+										>
+											<img
+												src="https://flowbite.s3.amazonaws.com/blocks/application-ui/products/imac-back-image.png"
+												alt="iMac Back Image"
+											/>
+											<button
+												type="button"
+												class="absolute bottom-1 left-1 text-red-500 dark:text-red-600 hover:text-red-500 dark:hover:text-red-400"
+											>
+												<svg
+													aria-hidden="true"
+													class="h-5 w-5"
+													fill="currentColor"
+													viewBox="0 0 20 20"
+													xmlns="http://www.w3.org/2000/svg"
+													><path
+														fill-rule="evenodd"
+														d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+														clip-rule="evenodd"
+													></path></svg
+												>
+												<span class="sr-only"
+													>Delete image</span
+												>
+											</button>
+										</div>
+										<div
+											class="relative p-2 bg-gray-50 rounded-md w-36 h-36 dark:text-gray-50"
+										>
+											<img
+												src="https://flowbite.s3.amazonaws.com/blocks/application-ui/products/imac-back-image.png"
+												alt="iMac Back Image"
+											/>
+											<button
+												type="button"
+												class="absolute bottom-1 left-1 text-red-500 dark:text-red-600 hover:text-red-500 dark:hover:text-red-400"
+											>
+												<svg
+													aria-hidden="true"
+													class="h-5 w-5"
+													fill="currentColor"
+													viewBox="0 0 20 20"
+													xmlns="http://www.w3.org/2000/svg"
+													><path
+														fill-rule="evenodd"
+														d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+														clip-rule="evenodd"
+													></path></svg
+												>
+												<span class="sr-only"
+													>Delete image</span
+												>
+											</button>
+										</div>
+									</div>
+									<div
+										class="flex justify-center items-center w-full"
+									>
+										<label
+											for="dropzone-file"
+											class="flex
+                                            flex-col
+                                            justify-center
+                                            items-center
+                                            w-full
+                                            h-60
+                                            rounded-md
+                                            border-2
+                                            border-dashed
+                                            cursor-pointer
+                                            bg-gray-100
+                                            border-gray-200
+                                            hover:border-gray-100
+                                            hover:bg-gray-200
+                                            dark:bg-gray-800
+                                            dark:border-gray-700
+                                            dark:hover:border-gray-600 dark:hover:bg-gray-700"
+										>
+											<div
+												class="flex flex-col justify-center items-center pt-5 pb-6"
+											>
+												<svg
+													aria-hidden="true"
+													class="mb-3 w-10 h-10 dark:text-gray-400"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+													xmlns="http://www.w3.org/2000/svg"
+													><path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+													></path></svg
+												>
+												<p
+													class="mb-2 text-sm text-gray-50 dark:text-gray-400"
+													style="color:rgb(156 163 175)"
+												>
+													<span class="font-semibold"
+														>Click to upload</span
+													> or drag and drop
+												</p>
+												<p
+													class="text-xs text-gray-50 dark:text-gray-400"
+												>
+													SVG, PNG, JPG or GIF (MAX.
+													800x400px)
+												</p>
+											</div>
+											<input
+												id="dropzone-file"
+												type="file"
+												class="hidden"
+											/>
+										</label>
+									</div>
+								</div>
+							</div>
+							<!-- Product Taxonomy -->
+							<div
+								class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+								id="dashboard"
+								role="tabpanel"
+								aria-labelledby="dashboard-tab"
+							>
+								<div class="grid grid-cols-12 gap-4">
+									<div class="col-span-6 sm:col-span-12">
+										<label
+											for="productTaxonomy"
+											class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+											>Taxonomia Google</label
+										>
+										<select
+											id="productTaxonomy"
+											name="productTaxonomy"
+											class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+										>
+											<option value="0" selected=""
+												>-- Seleccionar Taxonomia --</option
+											>
+										</select>
+									</div>
+									<div class="col-span-6 sm:col-span-3">
+										<label
+											for="phone-number"
+											class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+											>Phone Number</label
+										>
+										<input
+											type="number"
+											name="phone-number"
+											id="phone-number"
+											class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+											placeholder="e.g. +(12)3456 789"
+											required=""
+										/>
+									</div>
+									<div class="col-span-6 sm:col-span-3">
+										<label
+											for="department"
+											class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
+											>Department</label
+										>
+										<input
+											type="text"
+											name="department"
+											id="department"
+											class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+											placeholder="Development"
+											required=""
+										/>
+									</div>
+								</div>
+							</div>
+							<div
+								class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+								id="settings"
+								role="tabpanel"
+								aria-labelledby="settings-tab"
+							>
+								<p
+									class="text-sm text-gray-500 dark:text-gray-400"
+								>
+									This is some placeholder content the <strong
+										class="font-medium text-gray-800 dark:text-white"
+										>Settings tab's associated content</strong
+									>. Clicking another tab will toggle the
+									visibility of this one for the next. The tab
+									JavaScript swaps classes to control the
+									content visibility and styling.
+								</p>
+							</div>
+							<div
+								class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+								id="contacts"
+								role="tabpanel"
+								aria-labelledby="contacts-tab"
+							>
+								<p
+									class="text-sm text-gray-500 dark:text-gray-400"
+								>
+									This is some placeholder content the <strong
+										class="font-medium text-gray-800 dark:text-white"
+										>Contacts tab's associated content</strong
+									>. Clicking another tab will toggle the
+									visibility of this one for the next. The tab
+									JavaScript swaps classes to control the
+									content visibility and styling.
+								</p>
+							</div>
+						</div>
+					</div>
+					<!-- Modal footer -->
+					<div
+						class="flex items-center p-6 space-x-3 rtl:space-x-reverse border-t border-gray-200 rounded-b dark:border-gray-600"
+					>
+						<button
+							type="submit"
+							class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+							>Save all</button
+						>
+					</div>
+				</form>
+			</div>
+		</div>
+	</section>
+	<script type="module">
+		import { sendData } from "../../services/api.js";
+		// obtener los valores de los campos del formulario
+		let id = document.getElementById("productID");
+		let upc = document.getElementById("productUPC");
+		let name = document.getElementById("productName");
+		let brand = document.getElementById("productBrand");
+		let type = document.getElementById("productType");
+		let common = document.getElementById("productCommon");
+		let mpn = document.getElementById("productMPN");
+		let sku = document.getElementById("productSKU");
+		let addProduct = document.getElementById("addProduct");
+
+		// agregar el evento de envío del formulario
+		addProduct.addEventListener("submit", function (event) {
+			event.preventDefault();
+			let data = {
+				id: id.value,
+				ups: upc.value,
+				name: name.value,
+				brand: brand.value,
+				type: type.value,
+				common: common.value,
+				mpn: mpn.value,
+				sku: sku.value,
+			};
+
+			// enviar los datos al servidor
+			sendData("products", data);
+		});
+	</script>
 </Layout>
